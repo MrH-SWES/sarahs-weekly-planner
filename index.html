@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sarah's Meal Board</title>
+    <title>BenKenHen Weekly Meal Planner</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -65,15 +65,18 @@
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
         .header h1 {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 800;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            text-align: center;
+            color: var(--accent-secondary);
         }
 
         /* --- TABS --- */
@@ -294,8 +297,7 @@
 <body>
 
     <div class="header">
-        <h1>Sarah's Board</h1>
-        <div style="font-size: 0.9rem; color: var(--accent-warm);">Weekly Menu</div>
+        <h1>BenKenHen Weekly Meal Planner</h1>
     </div>
 
     <div id="tab-planner" class="tab-content active">
@@ -349,7 +351,7 @@
         </button>
         
         <button class="nav-btn" onclick="switchTab('recipes')" id="nav-recipes">
-            <span class="nav-icon">📖</span> Foods
+            <span class="nav-icon">📖</span> Recipes
         </button>
         
         <button class="nav-add-btn" onclick="openAddModal()">+</button>
@@ -385,6 +387,14 @@
         <div class="modal-card glass-panel" id="expandedContent"></div>
     </div>
 
+    <div class="modal" id="selectorModal">
+        <div class="modal-card glass-panel" style="max-width: 400px;">
+            <h2 style="margin-bottom:15px; color:var(--accent-secondary); text-align:center;">Add to Plan</h2>
+            <div id="selectorGrid" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button onclick="closeSelectorModal()" style="width:100%; margin-top:15px; background:none; border:none; color:var(--text-muted); padding:10px;">Cancel</button>
+        </div>
+    </div>
+
     <div class="modal" id="cookModeModal">
         <div class="modal-card glass-panel" id="cookModeContent" style="max-width:600px; height:90vh; display:flex; flex-direction:column;"></div>
     </div>
@@ -406,6 +416,7 @@
         
         // Selection State
         let pendingSlot = null; // { day: 'Monday', meal: 'L' }
+        let targetRecipeForSelection = null; // For modal selection
         
         const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const MEALS = [
@@ -522,6 +533,42 @@
             }
         }
 
+        // --- SELECTOR MODAL LOGIC ---
+        function openSelectorModal(recipeTitle) {
+            targetRecipeForSelection = recipeTitle;
+            const container = document.getElementById('selectorGrid');
+            container.innerHTML = DAYS.map(day => `
+                <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+                    <div style="font-weight:bold; margin-bottom:5px; color:var(--text-main); font-size:0.9rem;">${day}</div>
+                    <div style="display:flex; gap:5px;">
+                        ${MEALS.map(m => `
+                            <button onclick="finalizeSelectionFromModal('${day}', '${m.id}')" 
+                                style="flex:1; padding:10px 5px; background:var(--glass-bg); border:1px solid var(--glass-border); color:var(--text-muted); border-radius:6px; cursor:pointer; font-size:0.8rem;">
+                                ${m.label}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            document.getElementById('expandedModal').classList.remove('show');
+            document.getElementById('selectorModal').classList.add('show');
+        }
+
+        function closeSelectorModal() {
+            document.getElementById('selectorModal').classList.remove('show');
+            targetRecipeForSelection = null;
+        }
+
+        function finalizeSelectionFromModal(day, mealId) {
+            if(targetRecipeForSelection) {
+                mealPlan[day][mealId] = targetRecipeForSelection;
+                renderPlanner();
+                closeSelectorModal();
+                switchTab('planner');
+            }
+        }
+
         // --- CARD STACK LOGIC ---
         function renderCardStack() {
             const container = document.getElementById('cardStack');
@@ -575,8 +622,8 @@
                 const mealName = pendingSlot.meal === 'B' ? 'Breakfast' : pendingSlot.meal === 'L' ? 'Lunch' : 'Dinner';
                 actionBtn = `<button class="action-btn" style="background:var(--accent-secondary);" onclick="assignRecipeToSlot('${rId}')">📅 Add to ${pendingSlot.day} ${mealName}</button>`;
             } else {
-                // If not in selection mode, offer a generic "Add to Plan" which triggers a modal
-                actionBtn += `<button class="action-btn secondary" style="margin-top:10px; background:none; border:1px solid var(--accent-secondary); color:var(--accent-secondary);" onclick="alert('Tap a slot in the Plan tab first!')">📅 Add to Plan</button>`;
+                // If not in selection mode, open the selector modal
+                actionBtn += `<button class="action-btn secondary" style="margin-top:10px; background:none; border:1px solid var(--accent-secondary); color:var(--accent-secondary);" onclick="openSelectorModal('${rId}')">📅 Add to Plan</button>`;
             }
 
             content.innerHTML = `
