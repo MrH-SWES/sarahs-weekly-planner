@@ -30,12 +30,10 @@
             --radius: 12px;
         }
 
-        /* --- GLOBAL RESETS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
             font-family: var(--font-main);
-            /* Brushed Stainless Steel Effect */
             background-color: var(--steel-dark);
             background-image: 
                 linear-gradient(90deg, rgba(0,0,0,0.03) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.03) 100%),
@@ -53,7 +51,7 @@
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 2px solid var(--acrylic-border);
-            border-bottom: 2px solid var(--acrylic-edge); /* Thicker bottom for "thickness" */
+            border-bottom: 2px solid var(--acrylic-edge);
             box-shadow: var(--shadow-on-fridge);
             border-radius: var(--radius);
         }
@@ -63,12 +61,10 @@
             top: 0;
             z-index: 100;
             padding: 20px 20px;
-            /* Frosted glass header */
             background: rgba(60, 60, 65, 0.8);
             backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--acrylic-border);
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -82,7 +78,29 @@
             text-align: center;
             color: var(--chalk-white);
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin: 0;
         }
+
+        /* Sync Status Light */
+        .sync-status {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 300;
+            opacity: 0.8;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 8px;
+            border-radius: 10px;
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ccc; }
+        .status-dot.green { background: #00ff00; box-shadow: 0 0 5px #00ff00; }
+        .status-dot.yellow { background: #ffff00; animation: blink 1s infinite; }
+        .status-dot.red { background: #ff0000; }
+        @keyframes blink { 50% { opacity: 0.5; } }
 
         /* --- TABS --- */
         .tab-content { display: none; padding: 20px; max-width: 650px; margin: 0 auto; animation: fadeIn 0.4s ease; }
@@ -118,71 +136,37 @@
         .action-btn:active { transform: translateY(4px); box-shadow: none; }
 
         /* --- PLANNER SPECIFIC --- */
-        .meal-day-card {
-            margin-bottom: 20px;
-            padding: 0;
-            overflow: hidden;
-        }
-
+        .meal-day-card { margin-bottom: 20px; padding: 0; overflow: hidden; }
+        
         .meal-day-header {
             padding: 10px 15px;
             background: rgba(255,255,255,0.05);
             border-bottom: 1px solid var(--acrylic-border);
-            font-weight: 800;
-            font-size: 1.1rem;
+            font-weight: 800; font-size: 1.1rem;
             color: var(--chalk-blue);
             text-shadow: 0 0 5px rgba(100, 210, 255, 0.4);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .meal-slot-row {
-            display: flex;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            min-height: 55px;
-        }
+        .meal-slot-row { display: flex; border-bottom: 1px solid rgba(255,255,255,0.2); min-height: 55px; }
         .meal-slot-row:last-child { border-bottom: none; }
 
         .slot-label {
-            width: 50px;
-            background: rgba(0,0,0,0.2);
+            width: 50px; background: rgba(0,0,0,0.2);
             border-right: 1px solid rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 800;
-            color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 800; color: var(--text-muted);
         }
 
-        .slot-content {
-            flex: 1;
-            padding: 0 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.95rem;
-        }
+        .slot-content { flex: 1; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.95rem; }
 
         .slot-empty-btn {
-            background: none; border: none;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            padding: 15px 0;
-            font-style: italic;
+            background: none; border: none; color: var(--text-muted); font-size: 0.9rem;
+            cursor: pointer; width: 100%; text-align: left; padding: 15px 0; font-style: italic;
         }
         .slot-empty-btn:hover { color: var(--chalk-green); }
 
-        .slot-filled {
-            flex: 1;
-            cursor: pointer;
-            font-weight: 400;
-            color: var(--chalk-white);
-        }
+        .slot-filled { flex: 1; cursor: pointer; font-weight: 400; color: var(--chalk-white); }
         .slot-filled:hover { text-decoration: underline; color: var(--chalk-green); }
 
         .slot-clear-btn {
@@ -190,21 +174,16 @@
             font-size: 1.2rem; cursor: pointer; padding: 5px;
         }
 
-        /* --- RECIPE CARDS (ACRYLIC STYLE) --- */
-        .card-stack-container {
-            position: relative; height: 400px; margin: 20px auto; max-width: 380px; perspective: 1000px;
-        }
+        /* --- RECIPE CARDS --- */
+        .card-stack-container { position: relative; height: 400px; margin: 20px auto; max-width: 380px; perspective: 1000px; }
         
         .recipe-card {
             position: absolute; width: 100%; height: 380px;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(15px);
-            border: 2px solid var(--acrylic-border);
-            border-radius: 16px;
-            transition: all 0.35s ease-out;
-            cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            overflow: hidden;
+            border: 2px solid var(--acrylic-border); border-radius: 16px;
+            transition: all 0.35s ease-out; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); overflow: hidden;
             left: 50%; transform: translateX(-50%);
         }
         
@@ -228,12 +207,8 @@
         }
 
         /* --- SHOPPING LIST --- */
-        .shop-item {
-            display: flex; align-items: center; padding: 15px; margin-bottom: 8px;
-            cursor: pointer; transition: 0.2s;
-        }
+        .shop-item { display: flex; align-items: center; padding: 15px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
         .shop-item.checked { opacity: 0.4; text-decoration: line-through; }
-        
         .shop-checkbox {
             width: 22px; height: 22px; border: 2px solid var(--chalk-green);
             border-radius: 6px; margin-right: 15px; flex-shrink: 0;
@@ -249,52 +224,34 @@
             display: flex; justify-content: space-around; align-items: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 200;
         }
-        
         .nav-btn {
             background: none; border: none; color: var(--text-muted);
             display: flex; flex-direction: column; align-items: center; gap: 4px;
-            cursor: pointer; font-family: var(--font-main); font-size: 0.7rem; font-weight: 600;
-            width: 60px;
+            cursor: pointer; font-family: var(--font-main); font-size: 0.7rem; font-weight: 600; width: 60px;
         }
         .nav-btn.active { color: var(--chalk-blue); opacity: 1; }
         .nav-icon { font-size: 1.4rem; }
-        
         .nav-add-btn {
             width: 50px; height: 50px; border-radius: 50%;
-            background: var(--chalk-green); border: none;
-            color: #000; font-size: 1.8rem; margin-top: -30px;
+            background: var(--chalk-green); border: none; color: #000; font-size: 1.8rem; margin-top: -30px;
             box-shadow: 0 0 15px rgba(125, 255, 158, 0.4);
             cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
 
         /* --- MODALS --- */
-        .modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; 
-            align-items: center; justify-content: center; 
-        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; }
         .modal.show { display: flex; }
-        
-        .modal-card { 
-            width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; 
-            padding: 25px; color: white;
-        }
+        .modal-card { width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; padding: 25px; color: white; }
         
         input, textarea {
-            width: 100%; padding: 12px; border-radius: 8px; 
-            border: 1px solid var(--acrylic-border);
-            background: rgba(0,0,0,0.3); color: white;
-            font-family: var(--font-main); margin-bottom: 15px;
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--acrylic-border);
+            background: rgba(0,0,0,0.3); color: white; font-family: var(--font-main); margin-bottom: 15px;
         }
         input:focus, textarea:focus { border-color: var(--chalk-green); outline: none; }
 
         /* --- COOK MODE --- */
-        .cook-step-container {
-            padding: 30px 20px; text-align: center; min-height: 200px;
-            display: flex; flex-direction: column; justify-content: center;
-        }
+        .cook-step-container { padding: 30px 20px; text-align: center; min-height: 200px; display: flex; flex-direction: column; justify-content: center; }
         .cook-step-text { font-size: 1.4rem; line-height: 1.6; }
-        
         .meal-hint {
             background: var(--chalk-blue); color: #000; padding: 12px;
             border-radius: 8px; margin-bottom: 20px; font-weight: 800;
@@ -307,6 +264,12 @@
 
     <div class="header">
         <h1>Ben-Ken-Hen Weekly Meal Planner</h1>
+    </div>
+
+    <div class="sync-status">
+        <div class="status-dot green" id="syncDot"></div>
+        <div id="syncText">Synced</div>
+        <button onclick="init()" style="background:none; border:none; color:#ccc; font-size:0.8rem; text-decoration:underline; cursor:pointer; margin-left:5px;">Refresh</button>
     </div>
 
     <div id="tab-planner" class="tab-content active">
@@ -414,46 +377,92 @@
         const JSONBIN_KEY = "$2a$10$qZdFvBQfv93zCuJiPDIln.ui9ln3pOufUtcpIivYnUQdJmakpBmWe";
         const AI_API_URL = "https://micas-recipe-api.ssccchef.workers.dev";
         
-        // --- STATE ---
+        // --- CONSTANTS ---
+        const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const MEALS = [ { id: 'B', label: 'BRK' }, { id: 'L', label: 'LUN' }, { id: 'D', label: 'DIN' } ];
+
+        // --- GLOBAL STATE (Initialized Empty) ---
         let allRecipes = [];
         let filteredRecipes = [];
         let currentCardIndex = 0;
-        let shoppingList = JSON.parse(localStorage.getItem('sarahShopList') || '[]');
-        
-        // Planner State: { "Monday": { "B": recipeId, "L": null, "D": recipeId }, ... }
-        let mealPlan = JSON.parse(localStorage.getItem('sarahMealPlan') || '{}');
+        let shoppingList = [];
+        let mealPlan = {};
         
         // Selection State
-        let pendingSlot = null; // { day: 'Monday', meal: 'L' }
-        let targetRecipeForSelection = null; // For modal selection
-        
-        const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const MEALS = [
-            { id: 'B', label: 'BRK' }, 
-            { id: 'L', label: 'LUN' }, 
-            { id: 'D', label: 'DIN' }
-        ];
+        let pendingSlot = null;
+        let targetRecipeForSelection = null;
 
         // --- INIT ---
         async function init() {
+            setSyncStatus('loading', 'Loading...');
             try {
-                // Ensure planner structure is valid
+                // Initialize default plan structure
                 DAYS.forEach(day => {
                     if (!mealPlan[day]) mealPlan[day] = { B: null, L: null, D: null };
                 });
-                
+
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: { 'X-Master-Key': JSONBIN_KEY } });
                 const data = await res.json();
-                allRecipes = Array.isArray(data.record) ? data.record : [];
+                
+                // MIGRATION LOGIC: Check if it's old format (array) or new format (object)
+                if (Array.isArray(data.record)) {
+                    // Old format: It's just recipes
+                    allRecipes = data.record;
+                    // Keep default empty mealPlan and shoppingList
+                } else {
+                    // New format: It has everything
+                    allRecipes = data.record.recipes || [];
+                    mealPlan = data.record.mealPlan || mealPlan;
+                    shoppingList = data.record.shoppingList || [];
+                }
+
+                // Ensure data integrity
+                DAYS.forEach(day => {
+                    if (!mealPlan[day]) mealPlan[day] = { B: null, L: null, D: null };
+                });
+
                 filteredRecipes = [...allRecipes];
                 
                 renderCardStack();
                 renderPlanner();
                 renderShopping();
                 populateTags();
+                setSyncStatus('green', 'Synced');
             } catch(e) {
-                document.getElementById('cardStack').innerHTML = "<div style='text-align:center; padding:40px;'>Loaded offline mode (recipes may be missing).</div>";
+                console.error(e);
+                setSyncStatus('red', 'Offline');
+                document.getElementById('cardStack').innerHTML = "<div style='text-align:center; padding:40px;'>Could not load data.</div>";
             }
+        }
+
+        // --- CLOUD SYNC ---
+        async function syncToCloud() {
+            setSyncStatus('yellow', 'Saving...');
+            
+            const payload = {
+                recipes: allRecipes,
+                mealPlan: mealPlan,
+                shoppingList: shoppingList
+            };
+
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+                    body: JSON.stringify(payload)
+                });
+                setSyncStatus('green', 'Synced');
+            } catch(e) {
+                console.error("Sync failed", e);
+                setSyncStatus('red', 'Save Failed');
+            }
+        }
+
+        function setSyncStatus(color, text) {
+            const dot = document.getElementById('syncDot');
+            const txt = document.getElementById('syncText');
+            dot.className = `status-dot ${color}`;
+            txt.innerText = text;
         }
 
         // --- PLANNER LOGIC ---
@@ -488,9 +497,6 @@
                     </div>
                 `;
             }).join('');
-            
-            // Save state whenever we render (simple sync)
-            localStorage.setItem('sarahMealPlan', JSON.stringify(mealPlan));
         }
 
         function selectForSlot(day, mealId) {
@@ -502,6 +508,7 @@
         function clearSlot(day, mealId) {
             mealPlan[day][mealId] = null;
             renderPlanner();
+            syncToCloud(); // Save change
         }
 
         function assignRecipeToSlot(recipeTitle) {
@@ -512,8 +519,8 @@
             renderPlanner();
             switchTab('planner');
             
-            // Close modal if open
             document.getElementById('expandedModal').classList.remove('show');
+            syncToCloud(); // Save change
         }
 
         function renderSelectionHint() {
@@ -539,6 +546,7 @@
             if(confirm("Clear the entire week?")) {
                 DAYS.forEach(day => mealPlan[day] = { B: null, L: null, D: null });
                 renderPlanner();
+                syncToCloud(); // Save change
             }
         }
 
@@ -575,6 +583,7 @@
                 renderPlanner();
                 closeSelectorModal();
                 switchTab('planner');
+                syncToCloud(); // Save change
             }
         }
 
@@ -624,14 +633,12 @@
             const content = document.getElementById('expandedContent');
             const rId = r.title.replace(/'/g, "\\'");
             
-            // Determine primary action button
             let actionBtn = `<button class="action-btn" onclick="openCookMode('${rId}')">🍳 Start Cooking</button>`;
             
             if (pendingSlot) {
                 const mealName = pendingSlot.meal === 'B' ? 'Breakfast' : pendingSlot.meal === 'L' ? 'Lunch' : 'Dinner';
                 actionBtn = `<button class="action-btn" style="background:var(--chalk-blue);" onclick="assignRecipeToSlot('${rId}')">📅 Add to ${pendingSlot.day} ${mealName}</button>`;
             } else {
-                // If not in selection mode, open the selector modal
                 actionBtn += `<button class="action-btn secondary" style="margin-top:10px; background:none; border:1px solid var(--chalk-blue); color:var(--chalk-blue);" onclick="openSelectorModal('${rId}')">📅 Add to Plan</button>`;
             }
 
@@ -677,7 +684,6 @@
             renderCookMode();
             document.getElementById('expandedModal').classList.remove('show');
             document.getElementById('cookModeModal').classList.add('show');
-            // Wake lock attempt
             if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(e=>{});
         }
 
@@ -721,18 +727,16 @@
             }
         }
 
-        // --- SHOPPING LIST & AI (UPDATED WITH FIXES) ---
+        // --- SHOPPING LIST & AI ---
         async function generateSmartShoppingList() {
             // 1. GATHER INGREDIENTS
             const allIngredients = [];
-            
             Object.values(mealPlan).forEach(daySlots => {
                 Object.values(daySlots).forEach(rTitle => {
                     if (rTitle) {
                         const r = allRecipes.find(x => x.title === rTitle);
                         if (r) {
                             r.ingredients.forEach(ing => {
-                                // Original exclusion logic
                                 if (ing.startsWith('---') || ing.includes('METHOD') || ing.includes('EQUIPMENT')) return;
                                 allIngredients.push(ing);
                             });
@@ -754,7 +758,7 @@
 
             const ingredientList = allIngredients.join("\n");
 
-            // 3. THE PROMPT (Updated for Specifics)
+            // 3. THE PROMPT
             const promptText = `You are a smart grocery shopping assistant. Convert recipe ingredients into a practical shopping list.
 
 CRITICAL RULES:
@@ -764,11 +768,11 @@ CRITICAL RULES:
    - Green onions: sold by the bunch (e.g., "1 bunch green onions")
    - Garlic: sold by the head (e.g., "1 head garlic")
    - Lemons/limes/onions: sold individually. Use "ea" if adding usage notes (e.g., "1 ea (need 2 tbsp juice) lemon" or "2 ea (need 1 cup chopped) onions").
-   - Spices/Dried Herbs: sold by jar/bottle (e.g. "1 jar dried dill"), NEVER just "1 dried dill".
+   - Spices/Dried Herbs: sold by jar/bottle. ALWAYS include the amount needed in parentheses (e.g. "1 jar dried dill (need 1 tsp)").
    - Canned goods: by the can (e.g., "2 cans (15 oz)")
    - Meat: by weight or package (e.g., "1 lb")
-   - Vinegars/Sauces: sold by bottle (e.g., "1 bottle (need 3 tbsp)")
-   - Condiments: by jar (e.g., "1 jar (need 2 tbsp)")
+   - Vinegars/Sauces: sold by bottle. ALWAYS include amount needed in parentheses (e.g., "1 bottle soy sauce (need 3 tbsp)").
+   - Condiments: by jar. ALWAYS include amount needed in parentheses (e.g., "1 jar mayo (need 2 tbsp)").
    - Grains: by bag (e.g., "1 bag (need 1 cup)")
    - Broth/stock: by carton (e.g., "1 carton (32 oz)")
 
@@ -799,9 +803,7 @@ Ingredients:
                 
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                if (data.error) throw new Error(data.error.message);
                 
                 let rawText = data.candidates[0].content.parts[0].text;
                 rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -824,20 +826,15 @@ Ingredients:
                 renderShopping();
                 switchTab('shopping');
                 updateShopBadge();
+                syncToCloud(); // Save the new list
 
             } catch (e) {
                 console.error('AI Error:', e);
-                alert("Couldn't generate smart list: " + e.message + "\n\nFalling back to basic list.");
-                
-                // Fallback
-                shoppingList = allIngredients.map(ing => ({
-                    text: ing,
-                    qty: '',
-                    checked: false,
-                    aisle: 'Grocery'
-                }));
+                alert("AI generation failed. Fallback list created.");
+                shoppingList = allIngredients.map(ing => ({ text: ing, qty: '', checked: false, aisle: 'Grocery' }));
                 renderShopping();
                 switchTab('shopping');
+                syncToCloud(); // Save the fallback list
             }
             
             btn.innerHTML = originalText;
@@ -861,13 +858,13 @@ Ingredients:
                 </div>
             `).join('');
             
-            localStorage.setItem('sarahShopList', JSON.stringify(shoppingList));
             updateShopBadge();
         }
 
         function toggleShopItem(i) {
             shoppingList[i].checked = !shoppingList[i].checked;
             renderShopping();
+            syncToCloud(); // Save change
         }
 
         function addCustomItem() {
@@ -876,12 +873,16 @@ Ingredients:
                 shoppingList.push({ text: val, checked: false });
                 document.getElementById('customItem').value = '';
                 renderShopping();
+                syncToCloud(); // Save change
             }
         }
 
         function clearShoppingList() {
-            shoppingList = [];
-            renderShopping();
+            if(confirm("Clear shopping list?")) {
+                shoppingList = [];
+                renderShopping();
+                syncToCloud(); // Save change
+            }
         }
 
         function updateShopBadge() {
@@ -944,16 +945,10 @@ Ingredients:
             };
             
             allRecipes.push(newR);
-            // Push to cloud
-            fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
-                body: JSON.stringify(allRecipes)
-            });
-            
             filteredRecipes = [...allRecipes];
             closeAddModal();
             renderCardStack();
+            syncToCloud(); // Save updated recipe list
         }
 
         // --- VOICE ---
@@ -966,7 +961,6 @@ Ingredients:
             recognition.onresult = (e) => {
                 const transcript = e.results[0][0].transcript;
                 document.getElementById('voiceStatus').innerText = "Analyzing: " + transcript;
-                // Simple parsing for demo
                 document.getElementById('inpTitle').value = "New Voice Recipe";
                 document.getElementById('inpDesc').value = transcript;
             };
