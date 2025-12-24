@@ -712,68 +712,123 @@
             }
         }
 
-        // --- SHOPPING LIST & AI ---
+        // --- SHOPPING LIST & AI (UPDATED WITH ORIGINAL PROMPT) ---
         async function generateSmartShoppingList() {
-            // Gather all ingredients
-            let ingredients = [];
-            Object.values(mealPlan).forEach(daySlot => {
-                Object.values(daySlot).forEach(rTitle => {
+            // 1. GATHER INGREDIENTS (Adapted for B/L/D structure)
+            const allIngredients = [];
+            
+            Object.values(mealPlan).forEach(daySlots => {
+                Object.values(daySlots).forEach(rTitle => {
                     if (rTitle) {
                         const r = allRecipes.find(x => x.title === rTitle);
-                        if (r) ingredients = [...ingredients, ...r.ingredients];
+                        if (r) {
+                            r.ingredients.forEach(ing => {
+                                // Original exclusion logic
+                                if (ing.startsWith('---') || ing.includes('METHOD') || ing.includes('EQUIPMENT')) return;
+                                allIngredients.push(ing);
+                            });
+                        }
                     }
                 });
             });
 
-            if (ingredients.length === 0) {
-                alert("Add meals to your plan first!");
+            if (allIngredients.length === 0) {
+                alert('No meals planned yet! Add some recipes to your week first.');
                 return;
             }
 
+            // 2. PREPARE UI
             const btn = document.getElementById('createListBtn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = "🤖 Analyzing...";
+            btn.innerHTML = "🤖 Building list...";
             btn.disabled = true;
 
+            const ingredientList = allIngredients.join("\n");
+
+            // 3. THE ORIGINAL PROMPT (Exact Copy)
+            const promptText = `You are a smart grocery shopping assistant. Convert recipe ingredients into a practical shopping list.
+
+CRITICAL RULES:
+1. THINK LIKE A SHOPPER - use quantities that match how items are actually sold:
+   - Celery: sold by the bunch (e.g., "1 bunch (need 5 ribs)")
+   - Herbs: sold by the bunch (e.g., "1 bunch parsley")
+   - Green onions: sold by the bunch (e.g., "1 bunch green onions")
+   - Garlic: sold by the head (e.g., "1 head garlic")
+   - Lemons/limes: sold individually (e.g., "2 lemons")
+   - Canned goods: by the can (e.g., "2 cans (15 oz)")
+   - Meat: by weight or package (e.g., "1 lb")
+   - Vinegars: sold by bottle (e.g., "1 bottle (need 3 tbsp)")
+   - Condiments (mustard, mayo, etc): by jar (e.g., "1 jar (need 2 tbsp)")
+   - Sauces (soy, fish, hot sauce): by bottle (e.g., "1 bottle (need 2 tbsp)")
+   - Grains (rice, quinoa, farro, spelt): by bag (e.g., "1 bag (need 1 cup)")
+   - Broth/stock: by carton (e.g., "1 carton (32 oz)")
+
+2. OMIT PANTRY STAPLES most kitchens have - DO NOT INCLUDE:
+   - Water (NEVER!)
+   - Salt, black pepper
+   - Cooking oil, olive oil, vegetable oil
+
+3. COMBINE DUPLICATES: same item from multiple recipes = one entry with total
+
+4. CATEGORIZE: Produce, Meat & Seafood, Dairy, Pantry, Canned Goods, Condiments, Spices, Bakery, Frozen, Deli
+
+5. FORMAT qty as a shopping quantity:
+   - Good: "1 bunch (need 5 ribs)", "2 cans", "1 jar (need 2 tbsp)", "1 bottle (need 3 tbsp)"
+   - Bad: "5", "0.33 bunch", "1 tbsp", "3"
+
+Return ONLY valid JSON, no markdown:
+{"Produce": [{"item": "celery", "qty": "1 bunch (need 5 ribs)"}], "Meat & Seafood": [], "Dairy": [], "Pantry": [], "Canned Goods": [], "Condiments": [], "Spices": [], "Bakery": [], "Frozen": [], "Deli": []}
+
+Ingredients:
+` + ingredientList;
+
+            // 4. CALL API & PARSE (Original Logic)
             try {
-                // Call Cloudflare AI Worker
                 const response = await fetch(AI_API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `Convert these recipe ingredients into a consolidated shopping list JSON. Combine duplicates. Group by aisle (Produce, Dairy, etc). \nIngredients: ${ingredients.join(', ')}` 
-                            }]
-                        }]
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                 });
                 
                 const data = await response.json();
-                let text = data.candidates[0].content.parts[0].text;
-                // Basic clean up of AI response to get JSON
-                text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-                const jsonList = JSON.parse(text);
                 
-                // Flatten to app format
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+                
+                let rawText = data.candidates[0].content.parts[0].text;
+                rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                const sorted = JSON.parse(rawText);
+
                 shoppingList = [];
-                for (let aisle in jsonList) {
-                    jsonList[aisle].forEach(item => {
-                        shoppingList.push({ 
-                            text: item.item || item, 
-                            qty: item.qty || '', 
-                            checked: false 
+                for (const [aisle, items] of Object.entries(sorted)) {
+                    if (items && items.length > 0) {
+                        items.forEach(item => {
+                            shoppingList.push({ 
+                                text: item.item, 
+                                qty: item.qty || '', 
+                                checked: false, 
+                                aisle: aisle 
+                            });
                         });
-                    });
+                    }
                 }
                 
                 renderShopping();
                 switchTab('shopping');
                 updateShopBadge();
+
             } catch (e) {
-                console.error(e);
-                alert("AI generation failed. creating raw list.");
-                shoppingList = ingredients.map(i => ({ text: i, checked: false }));
+                console.error('AI Error:', e);
+                alert("Couldn't generate smart list: " + e.message + "\n\nFalling back to basic list.");
+                
+                // Fallback
+                shoppingList = allIngredients.map(ing => ({
+                    text: ing,
+                    qty: '',
+                    checked: false,
+                    aisle: 'Grocery'
+                }));
                 renderShopping();
                 switchTab('shopping');
             }
