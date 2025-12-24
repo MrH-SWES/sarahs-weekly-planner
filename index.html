@@ -721,9 +721,9 @@
             }
         }
 
-        // --- SHOPPING LIST & AI (UPDATED WITH ORIGINAL PROMPT) ---
+        // --- SHOPPING LIST & AI (UPDATED WITH FIXES) ---
         async function generateSmartShoppingList() {
-            // 1. GATHER INGREDIENTS (Adapted for B/L/D structure)
+            // 1. GATHER INGREDIENTS
             const allIngredients = [];
             
             Object.values(mealPlan).forEach(daySlots => {
@@ -754,7 +754,7 @@
 
             const ingredientList = allIngredients.join("\n");
 
-            // 3. THE ORIGINAL PROMPT (Exact Copy)
+            // 3. THE PROMPT (Updated for Specifics)
             const promptText = `You are a smart grocery shopping assistant. Convert recipe ingredients into a practical shopping list.
 
 CRITICAL RULES:
@@ -763,13 +763,13 @@ CRITICAL RULES:
    - Herbs: sold by the bunch (e.g., "1 bunch parsley")
    - Green onions: sold by the bunch (e.g., "1 bunch green onions")
    - Garlic: sold by the head (e.g., "1 head garlic")
-   - Lemons/limes: sold individually (e.g., "2 lemons")
+   - Lemons/limes/onions: sold individually. Use "ea" if adding usage notes (e.g., "1 ea (need 2 tbsp juice) lemon" or "2 ea (need 1 cup chopped) onions").
+   - Spices/Dried Herbs: sold by jar/bottle (e.g. "1 jar dried dill"), NEVER just "1 dried dill".
    - Canned goods: by the can (e.g., "2 cans (15 oz)")
    - Meat: by weight or package (e.g., "1 lb")
-   - Vinegars: sold by bottle (e.g., "1 bottle (need 3 tbsp)")
-   - Condiments (mustard, mayo, etc): by jar (e.g., "1 jar (need 2 tbsp)")
-   - Sauces (soy, fish, hot sauce): by bottle (e.g., "1 bottle (need 2 tbsp)")
-   - Grains (rice, quinoa, farro, spelt): by bag (e.g., "1 bag (need 1 cup)")
+   - Vinegars/Sauces: sold by bottle (e.g., "1 bottle (need 3 tbsp)")
+   - Condiments: by jar (e.g., "1 jar (need 2 tbsp)")
+   - Grains: by bag (e.g., "1 bag (need 1 cup)")
    - Broth/stock: by carton (e.g., "1 carton (32 oz)")
 
 2. OMIT PANTRY STAPLES most kitchens have - DO NOT INCLUDE:
@@ -781,9 +781,7 @@ CRITICAL RULES:
 
 4. CATEGORIZE: Produce, Meat & Seafood, Dairy, Pantry, Canned Goods, Condiments, Spices, Bakery, Frozen, Deli
 
-5. FORMAT qty as a shopping quantity:
-   - Good: "1 bunch (need 5 ribs)", "2 cans", "1 jar (need 2 tbsp)", "1 bottle (need 3 tbsp)"
-   - Bad: "5", "0.33 bunch", "1 tbsp", "3"
+5. FORMAT qty as a shopping quantity.
 
 Return ONLY valid JSON, no markdown:
 {"Produce": [{"item": "celery", "qty": "1 bunch (need 5 ribs)"}], "Meat & Seafood": [], "Dairy": [], "Pantry": [], "Canned Goods": [], "Condiments": [], "Spices": [], "Bakery": [], "Frozen": [], "Deli": []}
@@ -791,7 +789,7 @@ Return ONLY valid JSON, no markdown:
 Ingredients:
 ` + ingredientList;
 
-            // 4. CALL API & PARSE (Original Logic)
+            // 4. CALL API & PARSE
             try {
                 const response = await fetch(AI_API_URL, {
                     method: 'POST',
